@@ -15,19 +15,29 @@ boolean connectWifi();
 //on/off callbacks 
 void DeckenlichtAn();
 void DeckenlichtAus();
-void kitchenLightsOn();
-void kitchenLightsOff();
+void Stecker1An();
+void Stecker1Aus();
+void Stecker2An();
+void Stecker2Aus();
+void Stecker3An();
+void Stecker3Aus();
+void Stecker4An();
+void Stecker4Aus();
 
 // Change this before you flash
-const char* ssid = "YourSSID";
-const char* password = "****************";
+const char* ssid = "SSID";
+const char* password = "**************";
 
 boolean wifiConnected = false;
 
 UpnpBroadcastResponder upnpBroadcastResponder;
 
 Switch *Deckenlicht = NULL;
-Switch *kitchen = NULL;
+Switch *Stecker1 = NULL;
+Switch *Stecker2 = NULL;
+Switch *Stecker3 = NULL;
+Switch *Stecker4 = NULL;
+
 
 void setup()
 {
@@ -55,11 +65,17 @@ void setup()
     // Define your switches here. Max 14
     // Format: Alexa invocation name, local port no, on callback, off callback
     Deckenlicht = new Switch("Deckenlicht", 80, DeckenlichtAn, DeckenlichtAus);
-    kitchen = new Switch("kitchen lights", 81, kitchenLightsOn, kitchenLightsOff);
+    Stecker1 = new Switch("Küche", 81, Stecker1An, Stecker1Aus);
+    Stecker2 = new Switch("Musikanlage", 82, Stecker2An, Stecker2Aus);
+    Stecker3 = new Switch("Kodi", 83, Stecker3An, Stecker3Aus);
+    Stecker4 = new Switch("Router", 84, Stecker4An, Stecker4Aus);
 
     Serial.println("Adding switches upnp broadcast responder");
     upnpBroadcastResponder.addDevice(*Deckenlicht);
-    upnpBroadcastResponder.addDevice(*kitchen);
+    upnpBroadcastResponder.addDevice(*Stecker1);
+    upnpBroadcastResponder.addDevice(*Stecker2);
+    upnpBroadcastResponder.addDevice(*Stecker3);
+    upnpBroadcastResponder.addDevice(*Stecker4);
   }
 }
  
@@ -68,29 +84,73 @@ void loop()
 	 if(wifiConnected){
       upnpBroadcastResponder.serverLoop();
       
-      kitchen->serverLoop();
+      Stecker1->serverLoop();
+      Stecker2->serverLoop();
+      Stecker3->serverLoop();
+      Stecker4->serverLoop();
       Deckenlicht->serverLoop();
 	 }
 }
 
 void DeckenlichtAn() {
-    Serial.print("Switch 1 turn on ...");
+    Serial.print("Deckenlicht turn on ...");
     mySwitch.switchOn("140690", "00010"); //Deckenlicht Anschaltcode
     delay(1000);
 }
 
 void DeckenlichtAus() {
-    Serial.print("Switch 1 turn off ...");
+    Serial.print("Deckenlicht turn off ...");
     mySwitch.switchOn("030392", "00010"); //Deckenlicht Abschaltcode
     delay(1000);
 }
-
-void kitchenLightsOn() {
-    Serial.print("Switch 2 turn on ...");
+//Küche
+void Stecker1An() {
+    Serial.print("Switch 1 turn on ...");
+    mySwitch.send(83029, 24); //Deckenlicht Abschaltcode
+    delay(1000);
 }
 
-void kitchenLightsOff() {
+void Stecker1Aus() {
+  Serial.print("Switch 1 turn off ...");
+    mySwitch.send(83028, 24); //Deckenlicht Abschaltcode
+    delay(1000);
+}
+
+//Musikanlage
+void Stecker2An() {
+    Serial.print("Switch 2 turn on ...");
+    mySwitch.send(86101,24); //Deckenlicht Abschaltcode
+    delay(1000);
+}
+
+void Stecker2Aus() {
   Serial.print("Switch 2 turn off ...");
+    mySwitch.send(86100,24); //Deckenlicht Abschaltcode
+    delay(1000);
+}
+//Raspberry/kodi
+void Stecker3An() {
+    Serial.print("Switch 3 turn on ...");
+    mySwitch.send(70741,24); //Deckenlicht Abschaltcode
+    delay(1000);
+}
+
+void Stecker3Aus() {
+  Serial.print("Switch 3 turn off ...");
+    mySwitch.send(70740,24); //Deckenlicht Abschaltcode
+    delay(1000);
+}
+//Router
+void Stecker4An() {
+    Serial.print("Switch 4 turn on ...");
+    mySwitch.send(21589,24); //Deckenlicht Abschaltcode
+    delay(1000);
+}
+
+void Stecker4Aus() {
+  Serial.print("Switch 4 turn off ...");
+    mySwitch.send(21588,24); //Deckenlicht Abschaltcode
+    delay(1000);
 }
 
 // connect to wifi – returns true if successful or false if not
